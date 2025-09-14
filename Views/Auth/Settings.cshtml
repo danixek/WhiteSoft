@@ -1,0 +1,66 @@
+﻿@model WhiteSoft.Models.SettingsViewModel
+
+@{
+    ViewData["Title"] = "UserSettings";
+}
+
+<h1 class="mt-2">Nastavení</h1>
+
+
+<form asp-action="Settings">
+    <div class="row">
+        <div class="col-sm-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Uložit" class="btn btn-primary mt-2" />
+        </div>
+    </div>
+</form>
+    <div class="col-12">
+        <div class="form-group">
+            <label>Dvoufaktorové ověřování (TOTP):
+                @if (Model.TOTP) {
+                    <span class="badge bg-success">Zapnuto</span>
+                } else
+                {
+                    <span class="badge bg-secondary">Vypnuto</span>
+                }</label>
+            <div>
+                <a asp-action="2fa" class="btn my-1 btn-primary">Nastavit 2FA</a>
+            </div>
+        </div>
+    </div>
+
+<div>
+    <a asp-action="Index" asp-controller="Home">Back to Main page</a>
+</div>
+

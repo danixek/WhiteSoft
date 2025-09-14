@@ -1,0 +1,56 @@
+﻿@model WhiteSoft.Models.TwoFactorViewModel
+
+<h3 class="w-100">Dvoufaktorové ověření</h3>
+
+<div class="row">
+    @if (Model.IsSetupMode)
+    {
+        <div class="col-md-6 col-12 order-md-1 order-0 text-center">
+            <p>Naskenuj tento QR kód v autentizační aplikaci:</p>
+            <img class="mx-auto d-flex" src="data:image/png;base64,@Model.QrCodeImageUrl" width="300" alt="QR kód" />
+
+            <p>Nebo použij tento kód ručně: <br /><strong>@Model.SharedKey</strong></p>
+            @if (Model.IsSetupMode)
+            {
+                <a asp-action="Reset2fa" class="btn btn-danger ms-auto">Smazat klíč</a>
+            }
+            @if (Model.TOTP && Model.IsSetupMode)
+            {
+                <a asp-action="Disable2fa" class="btn btn-danger ms-2">Vypnout</a>
+            }
+        </div>
+    }
+
+    <div class="col-md-6 col-12 order-md-0 order-1">
+        <form asp-action="Verify2FA" method="post">
+            <input type="hidden" asp-for="IsSetupMode" />
+            <div class="form-group">
+                @if (Model.IsSetupMode)
+                {
+                    <p>Pro nastavení dvoufaktorového ověřování postupujte následovně:</p>
+                    <ul>
+                        <li>Do svého mobilního telefonu si nainstalujte ověřovací aplikaci (např. Google Authenticator, Microsoft Authenticator nebo Authy).</li>
+                        <li>V aplikaci vyberte možnost <strong>Přidat účet</strong> a poté zvolte <strong>Naskenovat QR kód</strong>.</li>
+                        <li>Naskenujte pomocí aplikace níže zobrazený QR kód.</li>
+                        <li>Po naskenování začne aplikace generovat jednorázové 6místné kódy.</li>
+                        <li>Zadejte aktuálně zobrazený kód do formuláře níže a potvrďte.</li>
+                    </ul>
+
+                }
+                else
+                {
+                    <label>Zadejte kód z aplikace pro ověření přihlášení:</label>
+                }
+
+                <input asp-for="Code" class="form-control" />
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </div>
+            <div class="d-flex align-items-center">
+                <button type="submit" class="btn btn-success">Potvrdit</button>
+                <strong class="ms-auto">Odesláním formuláře se aktivuje 2FA</strong>
+            </div>
+        </form>
+    </div>
+
+</div>
+

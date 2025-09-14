@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Orders";
+}
+
+<h2>Orders (dynamic)</h2>
+
+<table class="table" id="ordersTable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- sem se to doplní -->
+    </tbody>
+</table>
+
+<script>
+    async function loadOrders() {
+        const response = await fetch('/api/orders');
+        const orders = await response.json();
+
+        const tbody = document.querySelector('#ordersTable tbody');
+        tbody.innerHTML = ''; // vyčistit
+
+        orders.forEach(order => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${order.id}</td>
+                <td>${order.customerName}</td>
+                <td>${order.total.toFixed(2)}</td>
+                <td>${new Date(order.createdAt).toLocaleString()}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // zavolat hned po načtení stránky
+    loadOrders();
+
+    // třeba každých 10 sekund refresh
+    setInterval(loadOrders, 10000);
+</script>

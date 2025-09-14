@@ -1,0 +1,157 @@
+﻿.theme-light {
+    --bs-body-bg: #ffffff; /* hlavní světlá barva */
+    --bs-body-color: #000000; /* černý text */
+    --bs-border-color: #dcdcdc; /* jemný kontrastní okraj */
+    --bs-secondary-bg: #1c7eff; /* modrá sekundární barva */
+    --bs-secondary-color: #ffffff; /* text na modrém pozadí */
+    --secondary-href-link: default;
+    --secondary-href-link-visited: default;
+    --filter-color: invert(1);
+    --logo-color: invert(0);
+}
+
+.theme-dark {
+    --bs-body-bg: #121212; /* hlavní tmavá barva */
+    --bs-body-color: #ffffff; /* bílý text */
+    --bs-border-color: #1f1f1f; /* jemný kontrastní okraj */
+    --bs-secondary-bg: #ff6a00; /* oranžová sekundární barva */
+    --bs-secondary-color: #121212; /* text na oranžovém pozadí */
+    --secondary-href-link: #333;
+    --secondary-href-link-visited: #000;
+    --filter-color: invert(0);
+    --logo-color: invert(1);
+}
+body, .logo-name, a.nav-link {
+    color: var(--bs-body-color) !important;
+}
+.navbar-toggler {
+    top: 0px !important;
+    left: 0px !important;
+    border-color: rgba(0,0,0,0) !important;
+    background-color: var(--bs-secondary-bg) !important;
+    color: var(--bs-body-color) !important;
+    position: fixed;
+    height: 48px;
+    border-radius: 0px
+}
+img[alt*="Logo"] {
+   filter: var(--logo-color);
+   margin-left: 40px;
+}
+
+.navbar-toggler::before {
+    background-color: var(--bs-secondary-bg) !important;
+}
+.navbar-toggler-icon {
+    filter: var(--filter-color);
+}
+.bold-blue {
+    color: var(--bs-secondary-bg);
+}
+.navbar {
+    position: fixed;
+    z-index: 100;
+    background-color: var(--bs-body-bg);
+    width: 100%;
+}
+a {
+    color: var(--secondary-href-link);
+    transition: 200ms;
+}
+a:hover:not(.btn), a:visited:not(.btn) {
+    color: var(--secondary-href-link-visited);
+}
+
+
+/* Sidebar menu in navbar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; 
+    width: 250px;
+    height: 100%;
+    background-color: var(--bs-body-bg);
+    box-shadow: 0px 0 2px rgba(0,0,0,0.5);
+    transition: left 0.3s ease;
+    z-index: 99;
+    padding-top: 60px;
+}
+
+.sidebar.show {
+    left: 0;
+}
+.navbar .navbar-nav.ms-auto {
+    flex-direction: row !important;
+    align-items: center; /* pro zarovnání tlačítka s linky */
+}
+.navbar-toggler {
+    z-index: 101; 
+}
+.right-actions {
+    gap: 20px !important;
+}
+.carousel-item img {
+    max-height: 500px;
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+    height: 200px;
+}
+.secondary {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+}
+
+.log-label.info td:first-child {
+    border-left: 5px solid #0b5ed7 !important;
+}
+
+.log-label.info {
+    background-color: #0b5ed733 !important;
+}
+
+.log-label.error td:first-child {
+    border-left: 5px solid #ff0000 !important;
+}
+
+.log-label.error {
+    background-color: #ff000033 !important;
+}
+
+.log-label.success td:first-child {
+    border-left: 5px solid #28a745 !important;
+}
+
+.log-label.success {
+    background-color: #28a74533 !important;
+}
+
+.log-label.warning td:first-child {
+    border-left: 5px solid #ffd800 !important;
+}
+
+.log-label.warning {
+    background-color: #ffd80033 !important;
+}
+.admin-tab-link {
+    text-decoration: none;
+}
+.form-group {
+    margin: 10px 0px
+}
+.product-card {
+    width: 100%; /* maximální šířka karty */
+    max-width: 250px; /* nebo jiná hodnota */
+    margin: auto; /* centrování */
+    border-radius: 12px; /* zaoblené rohy */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+    height: 80px; /* fixní výška obrázku */
+    object-fit: cover; /* ořízne obrázek správně */
+}
+
+.product-card .card-body {
+    text-align: center;
+}

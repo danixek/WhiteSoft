@@ -1,0 +1,117 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Košík";
+    var user = User.Identity!.IsAuthenticated ? UserManager.GetUserAsync(User).Result : null;
+}
+
+<h2>Váš košík</h2>
+
+<div id="cartContainer">
+    <!-- Pokud JS nefunguje, zobrazí se fallback obsah -->
+    <noscript>
+        <form method="post" asp-action="Checkout">
+            <table>
+                <tr><th>Produkt</th><th>Cena</th><th>Množství</th></tr>
+                @* Zde by se mohly vykreslit produkty z backendu, pokud cookies/fallback *@
+            </table>
+            <label>Jméno / název firmy:</label>
+            <input type="text" name="customerName" value="@user?.UserName" required />
+            <label>Email:</label>
+            <input type="email" name="customerEmail" value="@user?.Email" required />
+            <button type="submit">Odeslat objednávku</button>
+        </form>
+    </noscript>
+</div>
+
+<script>
+    async function loadCart() {
+        const container = document.getElementById('cartContainer');
+        container.innerHTML = '';
+
+        // Zkus načíst košík z cookies
+        const cartJson = document.cookie.split('; ').find(row => row.startsWith('Cart='));
+        let cart = cartJson ? JSON.parse(decodeURIComponent(cartJson.split('=')[1])) : [];
+
+        if (!cart.length) {
+            container.innerHTML = "<p>Košík je prázdný.</p>";
+            return;
+        }
+
+        // Vytvoříme formulář pro odeslání objednávky
+        const form = document.createElement('form');
+        form.method = "post";
+        form.action = "/Orders/Checkout";
+
+        // Tabulka košíku
+        const table = document.createElement('table');
+        table.innerHTML = `<tr><th>Produkt</th><th>Cena</th><th>Množství</th><th>Celkem</th></tr>`;
+
+        let total = 0;
+
+        for (const item of cart) {
+            // fetch dat ze serveru pro každý produkt
+            const response = await fetch(`/api/products/${item.productId}`);
+            if (!response.ok) continue;
+            const product = await response.json();
+
+            const row = document.createElement('tr');
+            const lineTotal = product.price * item.quantity;
+            total += lineTotal;
+
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.price.toFixed(2)} Kč</td>
+                <td>${item.quantity}</td>
+                <td>${lineTotal.toFixed(2)} Kč</td>
+            `;
+            table.appendChild(row);
+
+            // skrytý input pro backend
+            const inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'Items[' + item.productId + '].ProductId';
+            inputId.value = item.productId;
+            form.appendChild(inputId);
+
+            const inputQty = document.createElement('input');
+            inputQty.type = 'hidden';
+            inputQty.name = 'Items[' + item.productId + '].Quantity';
+            inputQty.value = item.quantity;
+            form.appendChild(inputQty);
+        }
+
+        container.appendChild(table);
+
+        // Celková cena
+        const pTotal = document.createElement('p');
+        pTotal.textContent = `Celkem: ${total.toFixed(2)} Kč`;
+        container.appendChild(pTotal);
+
+        // Formulář pro jméno/email
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.name = 'customerName';
+        nameInput.placeholder = 'Jméno / název firmy';
+        nameInput.value = "@user?.UserName";
+        nameInput.required = true;
+        form.appendChild(nameInput);
+
+        const emailInput = document.createElement('input');
+        emailInput.type = 'email';
+        emailInput.name = 'customerEmail';
+        emailInput.placeholder = 'Email';
+        emailInput.value = "@user?.Email";
+        emailInput.required = true;
+        form.appendChild(emailInput);
+
+        const submitBtn = document.createElement('button');
+        submitBtn.type = 'submit';
+        submitBtn.textContent = 'Odeslat objednávku';
+        form.appendChild(submitBtn);
+
+        container.appendChild(form);
+    }
+
+    loadCart();
+</script>

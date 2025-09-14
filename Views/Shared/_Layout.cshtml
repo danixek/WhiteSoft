@@ -1,0 +1,236 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WhiteSoft</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="icon" type="image/x-icon" href="~/img/logo/whitesoft_favicon.ico" />
+
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-toggleable-sm navbar-light" style="padding: 0px !important">
+
+            <div class="container-fluid">
+
+                <!-- Navbar toggler -->
+                <button class="navbar-toggler navbar-toggler-container" type="button">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="sidebar collapse">
+                    <ul class="navbar-nav ms-3 mt-3">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="home"
+                               asp-action="index">Úvod</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="home"
+                               asp-action="about">O nás</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="orders"
+                               asp-action="eshop">E-shop - naše produkty</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="home"
+                               asp-action="contacts">Kontakt</a>
+                        </li>
+                        @if (User.IsInRole("superadmin"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="admin"
+                                   asp-action="index">Administrace</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("admin") || User.IsInRole("superadmin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="orders"
+                                   asp-action="index">Správa objednávek</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+
+                <!-- Brand: logo + název -->
+                <a class="d-flex align-items-center navbar-brand me-4 ms-3 text-decoration-none me-auto m-1" asp-area=""
+                   asp-controller="Home" asp-action="Index">
+                    <img src="~/img/logo/whitesoft_logo_mini.png" alt="Logo WhiteSoft"
+                         style="height: 25px; width: 35px object-fit: contain; margin-right: 0.3rem;">
+                    <span class="fw-semibold fs-5 logo-name"><strong class="bold-blue">White</strong>Soft</span>
+                </a>
+
+                <!-- Right Actions -->
+                <ul class="navbar-nav ms-auto flex-row align-items-center right-actions">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="orders" asp-action="cart">
+                            <i class="bi bi-cart"></i> Košík
+                            <span id="cartCount" class="badge bg-secondary">0</span>
+                        </a>
+                    </li>
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @User.Identity?.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="settingsDropdown">
+                                <li><a class="dropdown-item" asp-controller="auth" asp-action="settings">Nastavení</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a asp-action="Logout" asp-controller="Auth" class="dropdown-item">Odhlásit se</a>
+                                </li>
+
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="auth" asp-action="login">Přihlásit</a>
+                        </li>
+                        @if (!(User.IsInRole("superadmin") || User.IsInRole("admin")))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="auth" asp-action="register">Registrovat</a>
+                            </li>
+                        }
+                    }
+
+                    <!-- Theme toggle button -->
+                    <li class="nav-item mt-1">
+                        <button id="theme-toggle" class="btn btn-outline-secondary btn-sm" data-bs-tooltip="tooltip"
+                                data-bs-placement="bottom" style="border-color: transparent"
+                                aria-label="Změnit vzhled stránky" data-bs-original-title="Změnit vzhled stránky">
+                            <i class="bi bi-circle-half"></i>
+                        </button>
+                    </li>
+
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Blank space -->
+        <div class="blankSpace w-100" style="height: @(Context.Request.Path.Value?.ToLower().Contains("/admin") == false ? 48 : 85)px"></div>
+
+        @if (Context.Request.Path.Value?.ToLower().Contains("/admin") == true && Context.Request.Path.Value?.ToLower().Contains("/home") == false)
+        {
+            <div class="admin-tabs position-fixed w-100" style="top: 65px; z-index: 99;">
+                <div class="container px-3 pb-2 d-flex align-items-center justify-content-between">
+                    <div class="admin-label fw-semibold text-uppercase text-secondary">
+                        Administrace
+                    </div>
+                    <div class="admin-links d-flex gap-3">
+                        <a class="admin-tab-link @(Context.Request.Path.Value?.ToLower().Equals("/admin") == true || Context.Request.Path.Value?.ToLower().Equals("/admin/index") == true ? "active" : "")"
+                           asp-controller="Admin" asp-action="Index">
+                            <i class="bi bi-shield-lock-fill me-1"></i> Admini
+                        </a>
+                        <a class="admin-tab-link @(Context.Request.Path.Value?.ToLower().Contains("/admin/manageusers") == true ? "active" : "")"
+                           asp-controller="Admin" asp-action="ManageUsers">
+                            <i class="bi bi-people me-1"></i> Uživatelé
+                        </a>
+                        <a class="admin-tab-link @(Context.Request.Path.Value?.ToLower().Contains("/admin/logs") == true ? "active" : "")"
+                           asp-controller="Admin" asp-action="Logs">
+                            <i class="bi bi-journal-text me-1"></i> Logy
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </header>
+    @if (Context.Request.Path == "/")
+    {
+        <partial name="/Views/Shared/_Carousel.cshtml" />
+    }
+
+    @* Layout container --> ON/OFF | container-fluid/container *@
+    <div class="@ViewData["LayoutContainerClass"] py-3 px-0">
+        <div class="container">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close btn-close" data-bs-dismiss="alert"
+                            aria-label="Zavřít"></button>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close btn-close" data-bs-dismiss="alert"
+                            aria-label="Zavřít"></button>
+                </div>
+            }
+            <div class="alert alert-warning alert-dismissible fade show mt-2" role="alert" style="z-index: 1050;">
+                První registrovaný se stal superadminem - email: admin@admin.cz, heslo: superadmin
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+        </div>
+
+        <main role="main" class="flex-grow-1 mb-5 mt-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer id="contact" class="mt-auto py-5 secondary">
+        <div class="container footer-content">
+            <div class="row">
+                <div class="col-6">
+                    <h3 class="w-100">Kontakt</h3>
+                </div>
+                <div class="col-6 d-flex align-items-center">
+                    <div class="ms-auto">
+                        @if (User.IsInRole("superadmin"))
+                        {
+                            <a class="me-3" asp-controller="admin"
+                               asp-action="index">Administrace</a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="contact-info col-6">
+                    <strong>Hlavní pobočka:</strong>
+                    <p>
+                        Sezemická 2757/2<br>193 00  Praha 1
+                    </p>
+                    <a href="https://maps.google.com" class="link-muted">Zobrazit na mapě</a>
+                    <a asp-controller="home" asp-action="contacts" class="link-muted">Další pobočky</a>
+                    <br />© @DateTime.Now.Year Whitesoft s. r. o.<br />
+                </div>
+                <div class="other-info col-6">
+                    <dl>
+                        <dt>Tel:</dt>
+                        <dd><a href="tel:+420800880088">800 88 00 88</a></dd>
+                        <dt>Email:</dt>
+                        <dd><a href="mailto:whitesoft@whitesoft.eu" class="link-muted">whitesoft@whitesoft.eu</a></dd>
+                        <dt>Datová schránka:</dt>
+                        <dd>2umtb2d</dd>
+                    </dl>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/js/theme-toggler.js" asp-append-version="true"></script>
+    <script src="~/js/sidebar.js"></script>
+    <script src="~/js/cartCount.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

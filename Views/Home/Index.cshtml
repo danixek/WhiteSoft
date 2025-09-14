@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+<h1>Úvodní stránka</h1>
+<p>Jaké funkce tu jsou?</p>
+<section>
+    <h2>Shrnutí projektu</h2>
+
+    <p>Projekt zasílám přesně ve 14. den, protože jsem si chtěl dát záležet na kvalitě implementace. Při práci jsem využíval i podporu ChatGPT pro inspiraci a optimalizaci řešení.</p>
+
+    <h3>Splněné funkce podle zadání</h3>
+    <ul>
+        <li>Registrace nového uživatele (jméno, příjmení, email, heslo).</li>
+        <li>První registrovaný uživatel se automaticky stává <strong>superadminem</strong>.</li>
+        <li>Přihlášení a odhlášení uživatele.</li>
+        <li>Dvoufaktorová autentizace přes <strong>TOTP</strong>.</li>
+        <li>Každý přihlášený uživatel má k dispozici vlastní obsah (Lorem Ipsum text na více stránkách, přístupný přes menu).</li>
+        <li>
+            Administrátor má k dispozici administraci uživatelů:
+            <ul>
+                <li>výpis uživatelů</li>
+                <li>editace uživatele (jméno, role)</li>
+                <li>možnost odebrat administrátorská práva</li>
+                <li>volitelně odstranění uživatele</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>Přidané funkce nad rámec zadání</h3>
+    <ul>
+        <li>Vstupy ukládané do databáze jsou <strong>ošetřeny proti XSS</strong> s důrazem na čistotu kódu.</li>
+        <li><strong>Logovací systém</strong> dostupný pro superadmina.</li>
+        <li>Produkty v e-shopu se zobrazují <strong>dynamicky pomocí JavaScriptu</strong> (ochota přejít na Node.js v budoucnu).</li>
+    </ul>
+
+    <h3>Funkce, které zatím chybí</h3>
+    <ul>
+        <li>Dokončený <strong>košík objednávek</strong> ukládaný do cookies včetně ochrany proti manipulaci s cenami.</li>
+        <li><strong>Živé generování náhodných objednávek</strong> pro superadmina (s možností sledovat dynamicky načítané objednávky).</li>
+    </ul>
+</section>
+
+<div id="pinnedContainer" class="row"></div>
+
+<h2>Lorem ipsum</h2>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nisl tincidunt eget nullam non. Quis hendrerit dolor magna eget est lorem ipsum dolor sit. Volutpat odio facilisis mauris sit amet massa. Commodo odio aenean sed adipiscing diam donec adipiscing tristique. Mi eget mauris pharetra et. Non tellus orci ac auctor augue. Elit at imperdiet dui accumsan sit. Ornare arcu dui vivamus arcu felis. Egestas integer eget aliquet nibh praesent. In hac habitasse platea dictumst quisque sagittis purus. Pulvinar elementum integer enim neque volutpat ac.
+<br />
+
+<script src="~/js/loadCards.js"></script>
