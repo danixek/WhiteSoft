@@ -12,6 +12,6 @@
     <WebStackScaffolding_IsReferencingScriptLibrariesSelected>False</WebStackScaffolding_IsReferencingScriptLibrariesSelected>
     <WebStackScaffolding_LayoutPageFile />
     <WebStackScaffolding_DbContextTypeFullName>WhiteSoft.Models.ApplicationDbContext</WebStackScaffolding_DbContextTypeFullName>
-    <NameOfLastUsedPublishProfile>C:\Users\danix\source\repos\WhiteSoft\Properties\PublishProfiles\site36589-WebDeploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\Users\danix\source\repos\WhiteSoft\Properties\PublishProfiles\site36589-WebDeploy1.pubxml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>
