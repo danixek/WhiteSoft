@@ -5,7 +5,6 @@ namespace WhiteSoft.Models
 {
     public class SettingsViewModel : ISecurityModel
     {
-        [AntiXss]
         public string? Id { get; set; }
 
         [AntiXss]

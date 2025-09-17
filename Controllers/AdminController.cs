@@ -11,10 +11,9 @@ namespace WhiteSoft.Controllers
     [Authorize(Roles = "superadmin")]
     public class AdminController : Controller
     {
-        /// Superadmin může spravovat všechny uživatele (včetně adminů) a role v systému.
-        /// Má k dispozici i logování - kontrola administrativních akcí.
-        /// A také může přidělovat role, mazat, registrovat
-        /// a editovat uživatele či dokonce přidávat nové články.
+        //* Superadmin could manage all users (including admins) and roles in the system
+        // Including editing users, adding new articles, or even look to app logs. *//
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogService _logService;
@@ -27,7 +26,7 @@ namespace WhiteSoft.Controllers
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _logService = logService;    // Injikuje logger pro logování
+            _logService = logService;
             _insuranceContext = context;
         }
 
@@ -49,9 +48,6 @@ namespace WhiteSoft.Controllers
 
                 var isSuperAdmin = await _userManager.IsInRoleAsync(user, "superadmin");
                 var isAdmin = await _userManager.IsInRoleAsync(user, "admin") || isSuperAdmin;
-
-                // XSS protection
-                user.ApplyXssProtection();
 
                 model.Add(new AdminUserViewModel
                 {
@@ -107,13 +103,13 @@ namespace WhiteSoft.Controllers
             // XSS protection
             user.ApplyXssProtection();
 
-            // Zkontroluj, že role "admin" existuje
+            // Verify, if the role "admin" exists
             if (!await _roleManager.RoleExistsAsync("admin"))
             {
                 await _roleManager.CreateAsync(new IdentityRole("admin"));
             }
 
-            // Přidej roli admin
+            // Adds the role admin
             await _userManager.AddToRoleAsync(user, "admin");
             await _userManager.AddToRoleAsync(user, "admin");
             await _logService.LogAsync("Warning", $"Uživatel {user.UserName} byl povýšen na admina.", User.Identity?.Name);
@@ -172,8 +168,8 @@ namespace WhiteSoft.Controllers
                 Email = user.Email,
             };
 
-            ViewBag.IsAdminEditing = true; // pro view logiku
-            return View("~/Views/Auth/Edit.cshtml", model);
+            ViewBag.IsAdminEditing = true;
+            return View("~/Views/Auth/Edit.cshtml", model); // It using the same view as edit method
         }
 
 
@@ -183,15 +179,12 @@ namespace WhiteSoft.Controllers
         {
             var model = new RegisterViewModel
             {
-                Role = role // Předáme jako výchozí
+                Role = role // Superadmin could registering "user" or "admin"
             };
 
-            ViewBag.IsAdminCreating = true; // Pro form nebo view logiku
-            return View("~/Views/Auth/Register.cshtml", model); // Používá stejný view jako běžná registrace
+            ViewBag.IsAdminCreating = true; // For form or view logic
+            return View("~/Views/Auth/Register.cshtml", model); // It using the same view as register method
         }
-
-
-        // atd. – zablokování, přidání role, výpis logu...
 
         public async Task<IActionResult> Logs()
         {

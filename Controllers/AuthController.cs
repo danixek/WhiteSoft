@@ -24,14 +24,14 @@ namespace WhiteSoft.Controllers
             _logService = logService;
         }
 
-        /*  Pro autentizaci jsem použil ASP.NET Identity, protože poskytuje bezpečné a ověřené řešení;
-         *  Microsoft by přeci k tomu nezaměstnával amatéry - ne?.
+        /*  For authentization I used ASP.NET Identity, because it provides secured and verified solution;
+         *  Microsoft would not employed amateur - no?
          * 
-         *  Hesla se nikdy neukládají přímo, ale pouze ve formě hashů. Pokud bych implementoval vlastní ukládání hesel,
-         *  ukládal bych také pouze hash a při přihlašování bych kontroloval shodu hashů.
+         *  Passwords aren't saved directly, but just as hash. If I may implemented own password savings,
+         *  I saved too just hash, and within login I tested hash match.
          *
-         *  Použití hashů místo šifrování zajišťuje, že původní heslo nelze zpětně získat
-         *  – je to jako znát násobení, ale již neznát dělení.
+         *  Using hash instead of encryption ensures, thanks to the fact that the original password cannot be recovered
+         *  – its as known multiplication, but not division.
          */
 
         [HttpGet]
@@ -57,7 +57,7 @@ namespace WhiteSoft.Controllers
                     {
                         var twoFactorModel = new TwoFactorViewModel
                         {
-                            IsSetupMode = false // false = jen login, ne nastavení
+                            IsSetupMode = false // false = only login, not settings
                         };
                         return View("2FA", twoFactorModel);
                     }
@@ -118,17 +118,17 @@ namespace WhiteSoft.Controllers
             if (result.Succeeded)
             {
 
-                // Zkontroluj, zda je to první uživatel v systému
+                // Verify, if is first user in the database
                 var usersCount = await _userManager.Users.CountAsync();
                 if (usersCount == 1)
                 {
-                    // Zkontroluj, že role "superadmin" existuje
+                    // Verify, if the role "superadmin" exist
                     if (!await _roleManager.RoleExistsAsync("superadmin"))
                     {
                         await _roleManager.CreateAsync(new IdentityRole("superadmin"));
                     }
 
-                    // Přidej roli superadmin
+                    // Add the role superadmin
                     await _userManager.AddToRoleAsync(user, "superadmin");
                     await _logService.LogAsync("Warning", $"Uživatel {username} se úspěšně registroval, a byly mu přiděleny superadmin práva.", username);
 
@@ -137,13 +137,13 @@ namespace WhiteSoft.Controllers
                 {
                     var roleToAssign = model.Role == "admin" ? "admin" : "user";
 
-                    // Zkontroluj, že role "user" existuje
+                    // Verify, if the role "user" (or "admin") exist
                     if (!await _roleManager.RoleExistsAsync(roleToAssign))
                     {
                         await _roleManager.CreateAsync(new IdentityRole(roleToAssign));
                     }
 
-                    // Přidělení role "user" (či "admin") nově registrovanému uživateli
+                    // Add role "user" (or "admin") to new registered user
                     await _userManager.AddToRoleAsync(user, roleToAssign);
                     if (!isAdminCreating)
                     {
@@ -159,19 +159,18 @@ namespace WhiteSoft.Controllers
                     }
                 }
 
-                // Přihlášení uživatele po úspěšné registraci
-                // V případě registraci superadminem k automatickému přihlášení nedojde
+                // Login of user after succes registration
+                // If case of registration by superadmin - to autologin does not occur
                 if (!isAdminCreating)
                 {
-                    // Uživatel se registruje sám – přihlásíme ho a přesměrujeme
+                    // User is registering himself – after that he is redirected and autologged
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    // Superadmin registruje – nechceme redirect ani automatické přihlášení
-                    // Můžeš dát třeba ViewBag nebo TempData pro potvrzení úspěchu
-                    ViewBag.Message = "Uživatel úspěšně vytvořen administrátorem.";
+                    // Superadmin registering users – without redirect or autologgin
+                    TempData["Success"] = $"Uživatel úspěšně vytvořen administrátorem.";
                     return RedirectToAction("Index", "Admin");
                 }
             }
@@ -226,7 +225,7 @@ namespace WhiteSoft.Controllers
                 return View(model);
             }
 
-            // Aktualizace dat uživatele
+            // Update the datas of user
             user.FirstName = model.FirstName!;
             user.LastName = model.LastName!;
             user.Email = model.Email!;
@@ -253,7 +252,7 @@ namespace WhiteSoft.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            // Aktualizace dat uživatele
+            // Update the datas of user
             user.FirstName = model.FirstName!;
             user.LastName = model.LastName!;
             user.Email = model.Email!;
@@ -314,14 +313,14 @@ namespace WhiteSoft.Controllers
             string? getKey = await _userManager.GetAuthenticatorKeyAsync(user);
             if (string.IsNullOrEmpty(getKey))
             {
-                await _userManager.ResetAuthenticatorKeyAsync(user); // vygeneruje nový klíč
+                await _userManager.ResetAuthenticatorKeyAsync(user);
                 getKey = await _userManager.GetAuthenticatorKeyAsync(user);
             }
 
             var email = await _userManager.GetEmailAsync(user);
             var totpUri = $"otpauth://totp/{ConfigurationManager.AppSettings["WhiteSoft"]}:{email}?secret={getKey}&issuer={ConfigurationManager.AppSettings["WhiteSoft"]}&digits=6";
             
-            // QR code pomocí QRCoder
+            // QR code - by QRCoder
             using var qrGenerator = new QRCoder.QRCodeGenerator();
             var qrCodeData = qrGenerator.CreateQrCode(totpUri, QRCoder.QRCodeGenerator.ECCLevel.Q);
             var qrCode = new QRCoder.PngByteQRCode(qrCodeData);

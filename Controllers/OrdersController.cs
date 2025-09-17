@@ -248,7 +248,7 @@ public class OrdersController : Controller
         return Ok(cart); // nebo RedirectToAction("Index"), podle potřeby
     }
 
-    public IActionResult Cart()
+    public IActionResult CartView()
     {
         // Pokud je uživatel přihlášený, můžeme předvyplnit jméno a email ve view
         string? userName = null;

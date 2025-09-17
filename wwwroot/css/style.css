@@ -14,10 +14,10 @@
     --bs-body-bg: #121212; /* hlavní tmavá barva */
     --bs-body-color: #ffffff; /* bílý text */
     --bs-border-color: #1f1f1f; /* jemný kontrastní okraj */
-    --bs-secondary-bg: #ff6a00; /* oranžová sekundární barva */
-    --bs-secondary-color: #121212; /* text na oranžovém pozadí */
-    --secondary-href-link: #333;
-    --secondary-href-link-visited: #000;
+    --bs-secondary-bg: #777; /* sekundární barva */
+    --bs-secondary-color: #fff; /* text na oranžovém pozadí */
+    --secondary-href-link: #aaa;
+    --secondary-href-link-visited: #ccc;
     --filter-color: invert(0);
     --logo-color: invert(1);
 }
@@ -82,7 +82,8 @@ a:hover:not(.btn), a:visited:not(.btn) {
 }
 .navbar .navbar-nav.ms-auto {
     flex-direction: row !important;
-    align-items: center; /* pro zarovnání tlačítka s linky */
+    align-items: center;
+    /* pro zarovnání tlačítka s linky */
 }
 .navbar-toggler {
     z-index: 101; 
@@ -140,18 +141,22 @@ a:hover:not(.btn), a:visited:not(.btn) {
     margin: 10px 0px
 }
 .product-card {
-    width: 100%; /* maximální šířka karty */
-    max-width: 250px; /* nebo jiná hodnota */
-    margin: auto; /* centrování */
-    border-radius: 12px; /* zaoblené rohy */
+    width: 100%;
+    max-width: 250px;
+    margin: auto;
+    border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .product-card img {
-    height: 80px; /* fixní výška obrázku */
-    object-fit: cover; /* ořízne obrázek správně */
+    height: 80px;
+    object-fit: cover;
+    /* its cut the image */
 }
 
 .product-card .card-body {
     text-align: center;
+}
+section {
+margin: 30px 0;
 }
