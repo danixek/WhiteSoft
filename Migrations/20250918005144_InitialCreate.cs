@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WhiteSoft.Migrations
 {
     /// <inheritdoc />
-    public partial class FirstMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -78,6 +78,7 @@ namespace WhiteSoft.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerEmail = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -94,7 +95,10 @@ namespace WhiteSoft.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsPinned = table.Column<bool>(type: "bit", nullable: false),
+                    MaxCapacity = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -214,6 +218,7 @@ namespace WhiteSoft.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -231,26 +236,16 @@ namespace WhiteSoft.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "1", null, "admin", "ADMIN" },
-                    { "2", null, "superadmin", "SUPERADMIN" },
-                    { "3", null, "user", "USER" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "Name", "Price", "Type" },
+                columns: new[] { "Id", "ImageUrl", "IsPinned", "MaxCapacity", "Name", "Price", "Type" },
                 values: new object[,]
                 {
-                    { 1, "Eshop", 2000m, "Web" },
-                    { 2, "Firemní stránky", 2000m, "Web" },
-                    { 3, "Desktopová aplikace", 3000m, "Programy a aplikace" },
-                    { 4, "Mobillní aplikace", 4000m, "Programy a aplikace" },
-                    { 5, "Webhosting", 1500m, "Služby" },
-                    { 6, "Oprava počítače", 1500m, "Služby" }
+                    { 1, "/img/carousel/wallpaper1.png", true, null, "Eshop", 2000m, "Web" },
+                    { 2, "/img/carousel/wallpaper1.png", true, null, "Firemní stránky", 2000m, "Web" },
+                    { 3, "/img/carousel/wallpaper3.png", false, null, "Desktopová aplikace", 3000m, "Programy a aplikace" },
+                    { 4, "/img/carousel/wallpaper1.png", false, null, "Mobilní aplikace", 4000m, "Programy a aplikace" },
+                    { 5, "/img/carousel/wallpaper3.png", false, null, "Webhosting", 1500m, "Služby" },
+                    { 6, "/img/carousel/wallpaper2.png", false, 5, "Oprava počítače", 1500m, "Služby" }
                 });
 
             migrationBuilder.CreateIndex(

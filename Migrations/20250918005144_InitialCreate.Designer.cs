@@ -12,8 +12,8 @@ using WhiteSoft.Models;
 namespace WhiteSoft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250914140556_AddPinnedAndImageToProducts")]
-    partial class AddPinnedAndImageToProducts
+    [Migration("20250918005144_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,26 +50,6 @@ namespace WhiteSoft.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1",
-                            Name = "admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "2",
-                            Name = "superadmin",
-                            NormalizedName = "SUPERADMIN"
-                        },
-                        new
-                        {
-                            Id = "3",
-                            Name = "user",
-                            NormalizedName = "USER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -293,6 +273,10 @@ namespace WhiteSoft.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomerName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -318,6 +302,9 @@ namespace WhiteSoft.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -352,6 +339,9 @@ namespace WhiteSoft.Migrations
                     b.Property<bool>("IsPinned")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("MaxCapacity")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -371,8 +361,8 @@ namespace WhiteSoft.Migrations
                         new
                         {
                             Id = 1,
-                            ImageUrl = "",
-                            IsPinned = false,
+                            ImageUrl = "/img/carousel/wallpaper1.png",
+                            IsPinned = true,
                             Name = "Eshop",
                             Price = 2000m,
                             Type = "Web"
@@ -380,8 +370,8 @@ namespace WhiteSoft.Migrations
                         new
                         {
                             Id = 2,
-                            ImageUrl = "",
-                            IsPinned = false,
+                            ImageUrl = "/img/carousel/wallpaper1.png",
+                            IsPinned = true,
                             Name = "Firemní stránky",
                             Price = 2000m,
                             Type = "Web"
@@ -389,7 +379,7 @@ namespace WhiteSoft.Migrations
                         new
                         {
                             Id = 3,
-                            ImageUrl = "",
+                            ImageUrl = "/img/carousel/wallpaper3.png",
                             IsPinned = false,
                             Name = "Desktopová aplikace",
                             Price = 3000m,
@@ -398,16 +388,16 @@ namespace WhiteSoft.Migrations
                         new
                         {
                             Id = 4,
-                            ImageUrl = "",
+                            ImageUrl = "/img/carousel/wallpaper1.png",
                             IsPinned = false,
-                            Name = "Mobillní aplikace",
+                            Name = "Mobilní aplikace",
                             Price = 4000m,
                             Type = "Programy a aplikace"
                         },
                         new
                         {
                             Id = 5,
-                            ImageUrl = "",
+                            ImageUrl = "/img/carousel/wallpaper3.png",
                             IsPinned = false,
                             Name = "Webhosting",
                             Price = 1500m,
@@ -416,8 +406,9 @@ namespace WhiteSoft.Migrations
                         new
                         {
                             Id = 6,
-                            ImageUrl = "",
+                            ImageUrl = "/img/carousel/wallpaper2.png",
                             IsPinned = false,
+                            MaxCapacity = 5,
                             Name = "Oprava počítače",
                             Price = 1500m,
                             Type = "Služby"

@@ -14,16 +14,18 @@
     --bs-body-bg: #121212; /* hlavní tmavá barva */
     --bs-body-color: #ffffff; /* bílý text */
     --bs-border-color: #1f1f1f; /* jemný kontrastní okraj */
-    --bs-secondary-bg: #777; /* sekundární barva */
+    --bs-secondary-bg: #444; /* sekundární barva */
     --bs-secondary-color: #fff; /* text na oranžovém pozadí */
     --secondary-href-link: #aaa;
     --secondary-href-link-visited: #ccc;
     --filter-color: invert(0);
     --logo-color: invert(1);
 }
+
 body, .logo-name, a.nav-link {
     color: var(--bs-body-color) !important;
 }
+
 .navbar-toggler {
     top: 0px !important;
     left: 0px !important;
@@ -34,40 +36,46 @@ body, .logo-name, a.nav-link {
     height: 48px;
     border-radius: 0px
 }
+
 img[alt*="Logo"] {
-   filter: var(--logo-color);
-   margin-left: 40px;
+    filter: var(--logo-color);
+    margin-left: 40px;
 }
 
 .navbar-toggler::before {
     background-color: var(--bs-secondary-bg) !important;
 }
+
 .navbar-toggler-icon {
     filter: var(--filter-color);
 }
+
 .bold-blue {
     color: var(--bs-secondary-bg);
 }
+
 .navbar {
     position: fixed;
     z-index: 100;
     background-color: var(--bs-body-bg);
     width: 100%;
 }
+
 a {
     color: var(--secondary-href-link);
     transition: 200ms;
 }
-a:hover:not(.btn), a:visited:not(.btn) {
-    color: var(--secondary-href-link-visited);
-}
+
+    a:hover:not(.btn), a:visited:not(.btn) {
+        color: var(--secondary-href-link-visited);
+    }
 
 
 /* Sidebar menu in navbar */
 .sidebar {
     position: fixed;
     top: 0;
-    left: -250px; 
+    left: -250px;
     width: 250px;
     height: 100%;
     background-color: var(--bs-body-bg);
@@ -77,26 +85,34 @@ a:hover:not(.btn), a:visited:not(.btn) {
     padding-top: 60px;
 }
 
-.sidebar.show {
-    left: 0;
-}
+    .sidebar.show {
+        left: 0;
+    }
+
 .navbar .navbar-nav.ms-auto {
     flex-direction: row !important;
     align-items: center;
     /* pro zarovnání tlačítka s linky */
 }
+
 .navbar-toggler {
-    z-index: 101; 
+    z-index: 101;
 }
+
 .right-actions {
     gap: 20px !important;
 }
+
 .carousel-item img {
     max-height: 500px;
     object-fit: cover;
     object-position: center;
     width: 100%;
     height: 200px;
+}
+.primary {
+    background-color: var(--bs-primary-bg);
+    color: var(--bs-primary-color);
 }
 .secondary {
     background-color: var(--bs-secondary-bg);
@@ -134,12 +150,15 @@ a:hover:not(.btn), a:visited:not(.btn) {
 .log-label.warning {
     background-color: #ffd80033 !important;
 }
+
 .admin-tab-link {
     text-decoration: none;
 }
+
 .form-group {
-    margin: 10px 0px
+    margin: 10px 0px;
 }
+
 .product-card {
     width: 100%;
     max-width: 250px;
@@ -157,6 +176,12 @@ a:hover:not(.btn), a:visited:not(.btn) {
 .product-card .card-body {
     text-align: center;
 }
+
 section {
-margin: 30px 0;
+    margin: 30px 0;
+}
+
+.increase-btn, .decrease-btn, .delete-btn {
+    border: rgba(0,0,0,0);
+    background-color: rgba(0,0,0,0);
 }

@@ -23,6 +23,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 		<PackageReference Include="QRCoder" Version="1.6.0" />
+		<PackageReference Include="X.PagedList" Version="10.5.9" />
 	</ItemGroup>
 
 	<ItemGroup>

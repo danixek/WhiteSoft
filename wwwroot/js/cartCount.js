@@ -3,13 +3,12 @@
     const items = await response.json();
 
     let totalQty = 0;
-    items.forEach(item => totalQty += item.quantity);
+    items.forEach(item => totalQty += item.details.quantity);
 
-    const countElem = document.getElementById('cartCount');
-    if (countElem) {
-        countElem.textContent = totalQty;
+    const cartCount = document.getElementById('cartCount');
+    if (cartCount) {
+        cartCount.textContent = totalQty;
     }
 }
 
-// zavoláme při načtení stránky
 updateCartCount();

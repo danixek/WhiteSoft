@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PojistakNET.Data;
 using System.Configuration;
 using System.Globalization;
 using WhiteSoft.Models;
@@ -26,6 +27,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 builder.Services.AddAuthorization();
 
+builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -40,6 +42,13 @@ builder.Services.AddRouting(options =>
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// This generate data within first start to database
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await DbInitializer.SeedAdminAsync(scope.ServiceProvider);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

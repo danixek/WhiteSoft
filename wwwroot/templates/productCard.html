@@ -1,46 +1,12 @@
-﻿<div class="card product-card secondary">
+﻿<div class="card product-card p-3 primary" style="border: 1px rgba(70,70,70,0.2) solid; box-sizing: content-box; background-color: #cccccc10">
     <img src="{{imageUrl}}" class="card-img-top" alt="{{name}}" />
     <div class="card-body">
         <h5 class="card-title">{{name}}</h5>
         <p class="card-text">{{price}} Kč</p>
-        <form method="post" action="/Orders/AddToCart" class="add-to-cart-form">
-            <input type="hidden" name="ProductId" value="@p.Id" />
-            <input type="hidden" name="Quantity" value="1" />
-            <button type="submit" class="btn btn-primary">Do košíku</button>
+        <form method="post" action="/Api/Orders/AddToCart" class="add-to-cart" data-id="{{id}}" data-quantity="1">
+            <input type="hidden" name="ProductId" value="{{id}}" />
+            <input type="hidden" name="Quantity" value="1"/>
+            <button type="submit" class="btn btn-success">Do košíku</button>
         </form>
-
-
-
     </div>
 </div>
-
-<script>
-    let cardHtml = template
-    .replace(/{{id}}/g, p.id)
-    .replace(/{{name}}/g, p.name)
-    .replace(/{{price}}/g, p.price.toFixed(2))
-        .replace(/{{imageUrl}}/g, p.imageUrl);
-
-    async function addToCart(productId, quantity = 1) {
-        await fetch('/api/orders/AddToCart', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId, quantity })
-        });
-        loadCart();
-    }
-
-    document.addEventListener('submit', async e => {
-        if (!e.target.classList.contains('add-to-cart-form')) return;
-
-        e.preventDefault();
-
-        const form = e.target;
-        const productId = parseInt(form.querySelector('input[name="ProductId"]').value);
-        const quantity = parseInt(form.querySelector('input[name="Quantity"]').value);
-
-        await addToCart(productId, quantity);
-        alert("Produkt přidán do košíku!");
-    });
-
-</script>

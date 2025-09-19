@@ -1,5 +1,5 @@
 ﻿
-async function loadCards() {
+async function loadProducts() {
     const templateResponse = await fetch('/templates/productCard.html');
     const template = await templateResponse.text();
 
@@ -10,7 +10,7 @@ async function loadCards() {
 
     for (const c of containers) {
         const container = document.getElementById(c.id);
-        if (!container) continue; // pokud kontejner na stránce není, přeskočí
+        if (!container) continue;
 
         const response = await fetch(c.api);
         const products = await response.json();
@@ -25,29 +25,34 @@ async function loadCards() {
                 .replace(/{{imageUrl}}/g, p.imageUrl);
 
             const div = document.createElement('div');
-            div.classList.add('col-4', 'my-4'); // bootstrap grid
+            div.classList.add('col-5', 'my-4', 'd-flex');
             div.innerHTML = cardHtml;
             container.appendChild(div);
         });
     }
 
-    // Přidání listenerů pro tlačítka do košíku
+    // add the listeners for the buttons to the cart
     document.addEventListener('click', async (e) => {
         const btn = e.target.closest('.add-to-cart');
         if (!btn) return;
 
         const id = parseInt(btn.getAttribute('data-id'));
+        const q = parseInt(btn.getAttribute('data-quantity'));
         await fetch('/api/orders/AddToCart', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId: id, quantity: 1 })
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ productId: id, quantity: q })
         });
 
         alert("Produkt přidán do košíku!");
-        updateCartCount(); // aktualizace badge
+        updateCartCount();
+        loadCart();
     });
 
 }
 
-// spustí se automaticky při načtení stránky
-loadCards();
+// it starts in the same time when the page is reloaded
+loadProducts();

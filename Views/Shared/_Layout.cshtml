@@ -70,9 +70,20 @@
                 <!-- Right Actions -->
                 <ul class="navbar-nav ms-auto flex-row align-items-center right-actions">
                     <li class="nav-item">
+                        @using System.Text.Json
+                        @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+                        @{
+                            var cartJson = HttpContextAccessor.HttpContext?.Request.Cookies["Cart"];
+                            var cartItems = string.IsNullOrEmpty(cartJson)
+                            ? new List<CookieCart>()
+                            : JsonSerializer.Deserialize<List<CookieCart>>(cartJson) ?? new List<CookieCart>();
+                            var cartCount = cartItems?.Sum(c => c.Quantity) ?? 0;
+                        }
+
                         <a class="nav-link" asp-controller="orders" asp-action="cart">
                             <i class="bi bi-cart"></i> Košík
-                            <span id="cartCount" class="badge bg-secondary">0</span>
+                            <span id="cartCount" class="badge bg-secondary">@cartCount</span>
                         </a>
                     </li>
                     @if (User.Identity?.IsAuthenticated ?? false)

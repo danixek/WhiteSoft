@@ -1,4 +1,4 @@
-// Načti z cookie, pokud existuje
+// load it from cookie, if exists
 const themes = ['light', 'dark'];
 let currentThemeIndex = 0;
 
@@ -7,7 +7,7 @@ if (savedTheme && themes.includes(savedTheme)) {
     applyTheme(savedTheme);
     currentThemeIndex = themes.indexOf(savedTheme);
 } else {
-    applyTheme('light'); // výchozí
+    applyTheme('light'); // default
 }
 
 document.getElementById('theme-toggle').addEventListener('click', () => {

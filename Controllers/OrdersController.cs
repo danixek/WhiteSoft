@@ -1,23 +1,29 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text.Json;
 using WhiteSoft.Models;
+using WhiteSoft.Services;
+using X.PagedList;
 
 namespace WhiteSoft.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class OrdersController : ControllerBase
+    [Route("api/orders")]
+    public class OrdersApiController : ControllerBase
     {
+        private readonly CartService _cartService;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public OrdersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public OrdersApiController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, CartService cartService)
         {
             _context = context;
             _userManager = userManager;
+            _cartService = cartService;
         }
 
         // Index page of eshop
@@ -38,119 +44,131 @@ namespace WhiteSoft.Controllers
             return Ok(pinned);
         }
 
-        [HttpPost("AddToCart")] // pevná URL pro form i JS
-        public IActionResult AddToCartApi([FromBody] CartItem? item, [FromForm] CartItem? formItem)
+        [HttpPost("AddToCart")]
+        public IActionResult AddToCartApi( /* [FromBody] CookieCart? selectedProductByJavascript , */ [FromForm] CookieCart? selectedProductByForm)
         {
-            var cartItem = item ?? formItem;
-            if (cartItem == null) return BadRequest("Chybí položka.");
+            // Here I tested javascript form with fallback to static <form>
+            var selectedProduct = /* selectedProductByJavascript ?? */ selectedProductByForm;
+            if (selectedProduct == null) return BadRequest("Chybí položka.");
 
-            List<CartItem> cart;
+            List<CookieCart> cookieCart;
             if (Request.Cookies.TryGetValue("Cart", out var cartJson))
-                cart = JsonSerializer.Deserialize<List<CartItem>>(cartJson) ?? new List<CartItem>();
+                cookieCart = JsonSerializer.Deserialize<List<CookieCart>>(cartJson) ?? new List<CookieCart>();
             else
-                cart = new List<CartItem>();
+                cookieCart = new List<CookieCart>();
 
-            var existing = cart.FirstOrDefault(c => c.ProductId == cartItem.ProductId);
-            if (existing != null)
-                existing.Quantity += cartItem.Quantity;
+            var product = cookieCart.FirstOrDefault(c => c.ProductId == selectedProduct.ProductId);
+            if (product != null)
+            {
+                Console.WriteLine("quantity: " + product.Quantity);
+                Console.WriteLine("selected quantity: " + selectedProduct.Quantity);
+                product.Quantity += selectedProduct.Quantity;
+            }
             else
-                cart.Add(cartItem);
+            {
+                Console.WriteLine("Selected product: " + selectedProduct);
+                cookieCart.Add(selectedProduct);
+            }
 
-            var newJson = JsonSerializer.Serialize(cart);
-            Response.Cookies.Append("Cart", newJson, new CookieOptions
+            var cookieCartJson = JsonSerializer.Serialize(cookieCart);
+            Console.WriteLine("Cookies! " + cookieCartJson);
+            Response.Cookies.Append("Cart", cookieCartJson, new CookieOptions
             {
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
-                HttpOnly = true,
-                IsEssential = true
+                HttpOnly = false,  // for Postman and JS
+                IsEssential = true,
+                Path = "/"
             });
 
-            return Ok(cart);
+            // resolution depending on where the request came from
+            if (Request.Headers["Accept"].ToString().Contains("application/json"))
+                return Ok(cookieCart);
+            else
+                return RedirectToAction("Cart", "Orders");
         }
 
-        // Košík - Načte položky z košíku (z cookies) do API
+        // Fallback for cart view
+        // Is it actually useful here?
         [HttpGet("cart")]
         public async Task<IActionResult> GetCartItems()
         {
             if (!Request.Cookies.TryGetValue("Cart", out var cartJson))
-                return Ok(new List<object>()); // prázdný košík
-
-            var cartItems = JsonSerializer.Deserialize<List<CartItem>>(cartJson);
-            if (cartItems == null || !cartItems.Any())
-                return Ok(new List<object>());
-
-            var result = new List<object>();
-
-            foreach (var item in cartItems)
             {
-                var product = await _context.Products.FindAsync(item.ProductId);
-                if (product == null) continue;
-
-                result.Add(new
-                {
-                    product.Id,
-                    product.Name,
-                    product.Price,
-                    product.ImageUrl,
-                    item.Quantity
-                });
+                return Ok(new List<CookieCart>());
             }
+            var result = await _cartService.LoadItemsFromCookieCart(cartJson);
 
             return Ok(result);
         }
 
-
-        // Zpracuje objednávku z košíku
-        [HttpPost]
-        public async Task<IActionResult> Checkout([FromForm] string? customerName, [FromForm] string? customerEmail)
+        // It will process order from cart
+        // POST: /api/orders/checkout
+        [HttpPost("checkout")]
+        public async Task<IActionResult> Checkout([FromBody] OrderCheckoutModel orderInput)
         {
-            string finalName;
-            string finalEmail;
+            var cookieCart = orderInput.Cart;
+            bool simulation = false;
 
-            if (User.Identity!.IsAuthenticated)
+            // Superadmin can start the order simulation in order management
+            if (Request.Headers.ContainsKey("X-Simulation") && User.Identity!.IsAuthenticated)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId == null) return BadRequest("Uživatel není přihlášen.");
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user == null) return BadRequest("Uživatel nenalezen.");
-
-                finalName = user.UserName!;
-                finalEmail = user.Email!;
+                if (cookieCart == null || !cookieCart.Any())
+                    return BadRequest("Košík je prázdný.");
+                
+                // simulation of order - get cart from form
+                simulation = true;
+                cookieCart = orderInput.Cart;
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerEmail))
-                    return BadRequest("Jméno a email jsou povinné.");
+                simulation = false;
+                if (User.Identity!.IsAuthenticated)
+                {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (userId == null) return BadRequest("Uživatel není přihlášen.");
+                    var user = await _userManager.FindByIdAsync(userId);
+                    if (user == null) return BadRequest("Uživatel nenalezen.");
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(orderInput.CustomerName) || string.IsNullOrWhiteSpace(orderInput.CustomerEmail))
+                        return BadRequest("Jméno a email jsou povinné.");
 
-                // základní validace emailu
-                if (!customerEmail.Contains("@"))
-                    return BadRequest("Neplatný email.");
+                    // elementary validation of email
+                    if (!orderInput.CustomerEmail.Contains("@"))
+                        return BadRequest("Neplatný email.");
 
-                finalName = customerName;
-                finalEmail = customerEmail;
-            }
-
+                }
+            // Normal user - get cart from cookie
             if (!Request.Cookies.TryGetValue("Cart", out var cartJson))
                 return BadRequest("Košík je prázdný.");
 
-            var cartItems = JsonSerializer.Deserialize<List<CartItem>>(cartJson);
-            if (cartItems == null || !cartItems.Any())
+            cookieCart = JsonSerializer.Deserialize<List<CookieCart>>(cartJson);
+            if (cookieCart == null || !cookieCart.Any())
                 return BadRequest("Košík je prázdný.");
+            }
+            return await ProcessOrder(orderInput.CustomerName, orderInput.CustomerEmail, cookieCart!, simulation);
+
+        }
+        // Checkout method continues here
+        private async Task<IActionResult> ProcessOrder(string customerName, string customerEmail, List<CookieCart> cart, bool simulation)
+        {
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time");
 
             var order = new Order
             {
-                CustomerName = finalName,
-                CustomerEmail = finalEmail,
-                CreatedAt = DateTime.UtcNow,
+                CustomerName = customerName,
+                CustomerEmail = customerEmail,
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone),
                 Total = 0
             };
 
-            foreach (var item in cartItems)
+            foreach (var item in cart)
             {
                 var product = await _context.Products.FindAsync(item.ProductId);
                 if (product == null)
                     return NotFound($"Produkt s ID {item.ProductId} nenalezen.");
 
-                // kontrola dostupnosti / kapacity
                 if (product.MaxCapacity.HasValue)
                 {
                     var currentOrders = await _context.OrderItems
@@ -160,7 +178,6 @@ namespace WhiteSoft.Controllers
                     if (currentOrders + item.Quantity > product.MaxCapacity.Value)
                         return BadRequest($"Produkt {product.Name} není aktuálně k dispozici.");
                 }
-
 
                 var orderItem = new OrderItem
                 {
@@ -178,81 +195,83 @@ namespace WhiteSoft.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            Response.Cookies.Delete("Cart");
-
-            return Ok(order);
+            if (!simulation)
+                Response.Cookies.Delete("Cart");
+            return Ok();
         }
 
+        // GET /api/orders
+        [HttpGet]
+        [Authorize(Roles = "admin,superadmin")]
+        public async Task<IActionResult> GetOrders(int? page)
+        {
+            int pageSize = 30;
+            int pageNumber = page ?? 1;
+
+            var orders = await _context.Orders
+                .OrderByDescending(o => o.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var totalItems = await _context.Orders.CountAsync();
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            return Ok(new { orders, totalPages, totalItems });
+        }
+        // GET /api/orders/orderItems
+        [HttpGet("orderItems")]
+        [Authorize(Roles = "admin,superadmin")]
+        public async Task<IActionResult> GetOrderItems(int orderId)
+        {
+
+            var orderItems = await _context.OrderItems
+                .Where(oi => oi.OrderId == orderId)
+                .ToListAsync();
+
+            return Ok(orderItems);
+        }
     }
 }
 // MVC controller pro view
 public class OrdersController : Controller
 {
+    private readonly CartService _cartService;
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public OrdersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public OrdersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, CartService cartService)
     {
         _context = context;
         _userManager = userManager;
+        _cartService = cartService;
     }
-    [Route("Index")]
-    [HttpGet]
-    public async Task<IActionResult> GetOrders()
-    {
-        var orders = await _context.Orders
-            .OrderByDescending(o => o.CreatedAt)
-            .ToListAsync();
 
-        return Ok(orders);
+    [HttpGet]
+    [ActionName("Index")]
+    [Authorize(Roles = "admin,superadmin")]
+    public IActionResult Orders()
+    {
+        return View();
     }
     public IActionResult Eshop()
     {
-        return View(); // vrátí Views/Orders/Eshop.cshtml
-    }
-    // Vloží položku do košíku (do cookies)
-    [HttpPost]
-    public IActionResult AddToCart(CartItem item)
-    {
-        // Zkusí načíst existující košík z cookies
-        List<CartItem> cart;
-        if (Request.Cookies.TryGetValue("Cart", out var cartJson))
-        {
-            cart = JsonSerializer.Deserialize<List<CartItem>>(cartJson) ?? new List<CartItem>();
-        }
-        else
-        {
-            cart = new List<CartItem>();
-        }
-
-        // Najde, jestli už produkt v košíku je a přičte množství
-        var existing = cart.FirstOrDefault(c => c.ProductId == item.ProductId);
-        if (existing != null)
-        {
-            existing.Quantity += item.Quantity;
-        }
-        else
-        {
-            cart.Add(item);
-        }
-
-        // Uloží zpět do cookies
-        var newJson = JsonSerializer.Serialize(cart);
-        Response.Cookies.Append("Cart", newJson, new CookieOptions
-        {
-            Expires = DateTimeOffset.UtcNow.AddDays(7),
-            HttpOnly = true,
-            IsEssential = true
-        });
-
-        return Ok(cart); // nebo RedirectToAction("Index"), podle potřeby
+        return View();
     }
 
-    public IActionResult CartView()
+    public async Task<IActionResult> Cart()
     {
-        // Pokud je uživatel přihlášený, můžeme předvyplnit jméno a email ve view
-        string? userName = null;
-        string? userEmail = null;
+        if (!Request.Cookies.TryGetValue("Cart", out var cartJson))
+        {
+            return View(new CartUserViewModel());
+        }
+        var Cart = await _cartService.LoadItemsFromCookieCart(cartJson);
+
+        // If is user logged, it prefilled name and email in view
+        var model = new CartUserViewModel
+        {
+            Cart = Cart
+        };
 
         if (User.Identity!.IsAuthenticated)
         {
@@ -262,16 +281,13 @@ public class OrdersController : Controller
                 var user = _userManager.FindByIdAsync(userId).Result;
                 if (user != null)
                 {
-                    userName = user.UserName;
-                    userEmail = user.Email;
+                    model.CustomerName = user.FirstName + " " + user.LastName;
+                    model.CustomerEmail = user.Email!;
+                    model.Cart = Cart;
                 }
             }
         }
-
-        ViewData["UserName"] = userName;
-        ViewData["UserEmail"] = userEmail;
-
-        return View();
+        return View(model);
     }
 
 }

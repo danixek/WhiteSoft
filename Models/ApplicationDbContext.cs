@@ -32,10 +32,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             new Product { Id = 5, Name = "Webhosting", Type = "Služby", Price = 1500, ImageUrl = "/img/carousel/wallpaper3.png", MaxCapacity = null },
             new Product { Id = 6, Name = "Oprava počítače", Type = "Služby", Price = 1500, ImageUrl = "/img/carousel/wallpaper2.png", MaxCapacity = 5 }
         );
-        modelBuilder.Entity<IdentityRole>().HasData(
-            new IdentityRole { Id = "1", Name = "admin", NormalizedName = "ADMIN" },
-            new IdentityRole { Id = "2", Name = "superadmin", NormalizedName = "SUPERADMIN" },
-            new IdentityRole { Id = "3", Name = "user", NormalizedName = "USER" }
-        );
     }
 }

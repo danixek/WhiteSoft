@@ -13,13 +13,14 @@ namespace WhiteSoft.Services
 
         public async Task LogAsync(string level, string message, string? userName)
         {
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time"); // CET/CEST
             var logEntry = new LogEntry
             {
-                Timestamp = DateTime.UtcNow,
+                Timestamp = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone),
                 Level = level,
                 Message = message,
                 UserName = userName ?? "Anonymous",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone),
             };
 
             _logContext.LogEntries.Add(logEntry);
