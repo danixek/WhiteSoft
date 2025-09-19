@@ -61,6 +61,6 @@ Alternativně lze použít i Visual Studio Code s doinstalovaným rozšířením
 > 💡 **Poznámka:** Pokud se příkaz `dotnet ef` nezdaří, je pravděpodobně potřeba doinstalovat EF CLI nástroj:  
 `dotnet tool install --global dotnet-ef`
 
-Po úspěšném spuštění se v konzoli objeví adresa (např. https://localhost:5001).
+Po úspěšném spuštění se v konzoli objeví adresa (např. https://localhost:7204).
 Otevřete ji v prohlížeči – projekt by měl být dostupný.
 Ve Visual Studiu Community nebo Rideru se aplikace často spustí automaticky s otevřením prohlížeče.
