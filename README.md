@@ -31,8 +31,9 @@
             </ul>
         </li>
         <li>Dokončený <strong>košík objednávek</strong> ukládaný do cookies včetně ochrany proti manipulaci s cenami.</li>
-        <li><strong>Živé (dynamické) generování náhodných objednávek</strong> pro superadmina.</li>
-    </ul>
+        <li><strong>Živé (dynamické) generování náhodných objednávek</strong> pro superadmina a admina.</li>
+        <li><strong>Administrace produktů, včetně cen</strong> jen pro superadmina  – formulář (modal) se načítá dynamicky při kliknutí.</li>
+        
     <h3>Funkce, které zatím chybí</h3>
     <ul>
         <li>Stav objednávky a možnost nastavení filtrů u produktů</li>
