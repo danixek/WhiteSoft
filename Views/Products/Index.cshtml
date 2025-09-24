@@ -1,0 +1,126 @@
+﻿@{
+    string noImageSrc = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMyMCAxODAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMyMCIgaGVpZ2h0PSIxODAiIGZpbGw9IiNFMEUwRTAiLz48dGV4dCB4PSIxNjAiIHk9IjkwIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iYm9sZCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0ExQTFBMSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+";
+    string noImageStyle = "width: 100%; aspect-ratio: 16 / 9; object-fit: contain;";
+}
+
+<div class="row">
+    <div class="col-6">
+        <h2>Správa produktů</h2>
+    </div>
+    <div class="col-6 d-flex">
+        <button type="submit" class="ms-auto btn btn-success" id="addProductBtn">Přidat produkt</button>
+    </div>
+</div>
+
+
+<p>Poznámka: Připnutím se produkt zobrazí na úvodní stránce</p>
+<table class="table table-striped table-bordered text-center mt-2">
+    <thead class="table-dark mt-3">
+        <tr>
+            <th>Id</th>
+            <th>Název</th>
+            <th>Typ</th>
+            <th>max ks</th>
+            <th>Cena</th>
+            <th><small>Připnuto?</small></th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- ID 0 = Add product -->
+        <tr data-id="0" data-image="@noImageSrc" class="d-none">
+            <td>0</td>
+            <td>Procesor</td>
+            <td>Produkt</td>
+            <td>∞</td>
+            <td>1 Kč</td>
+            <td>No</td>
+        </tr>
+        @foreach (var product in Model)
+        {
+            <tr data-id="@product.Id" data-image="@product.ImageUrl">
+                <td>@product.Id</td>
+                <td class="d-flex text-left" style="padding-left: 20px">@product.Name</td>
+                <td>@product.Type</td>
+                <td>@(product.MaxCapacity ?? "∞")</td>
+                <td class="text-end">@product.Price Kč</td>
+                <td>@(product.IsPinned ? "Yes" : "No")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="productEditModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Úprava produktu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Javascript here  -->
+                <div class="row">
+                    <input type="hidden" id="modalId" />
+                    <div class="col-5">
+                        <div class="form-group">
+                            <label class="control-label">Aktuální: </label>
+                            <img id="modalImage" src="@noImageSrc" style="@noImageStyle" />
+                        </div>
+                        <div class="form-group d-flex">
+                            <input id="image-file" type="file" accept="image/*" style="display: none;" />
+                            <!-- Vlastní tlačítko -->
+                            <button type="button" class="btn btn-primary mx-auto" onclick="document.getElementById('image-file').click()">
+                                Vybrat obrázek
+                            </button>
+                        </div>
+                        <div class="form-group">
+                        <label class="control-label">Nově vybraný: </label>
+                            <img id="previewImage" src="@noImageSrc" style="@noImageStyle" />
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div class="row form-group">
+                            <label class="control-label">Název: </label>
+                            <input id="modalName" type="text" value="" class="form-control" />
+                        </div>
+                        <div class="row form-group">
+                            <label class="control-label">Typ: </label>
+                            <input id="modalType" type="text" value="" class="form-control" />
+                        </div>
+                        <div class="row w-100">
+                            <div class="col-7 form-group">
+                                <label class="control-label"><small>Neomezeně: </small></label>
+                                <input id="hasLimit" min="1" type="checkbox" />
+                            </div>
+                            <div class="col-5 form-group">
+                                <label class="control-label"><small>Připnuto: </small></label>
+                                <input id="modalPinned" type="checkbox" />
+                            </div>
+                        </div>
+                        <div class="row my-1">
+                            <div class="col-6">
+                                <label class="control-label">Max. kapacita: </label>
+                                <input id="modalCapacity" type="number" value="" min="1" class="form-control" />
+                            </div>
+                            <div class="col-6">
+                                <label class="control-label">Cena: </label>
+                                <input id="modalPrice" type="number" step="0.01" value="" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="d-flex mt-3">
+                            <button id="submitBtn" onclick="saveProduct()" class="btn btn-success ms-auto">Odeslat</button>
+                            <form method="post" id="modalDeleteForm" asp-action="Delete" asp-controller="Products">
+                                @Html.AntiForgeryToken()
+                                <input id="modalDeleteButton" type="hidden" name="id" value="" />
+                                <button class="btn btn-danger btn-success ms-2">Smazat</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/EditProduct.js"></script>
+<script src="~/js/ImagePreview.js"></script>

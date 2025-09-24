@@ -1,4 +1,6 @@
-﻿namespace WhiteSoft.Models
+﻿using System.Text.Json;
+
+namespace WhiteSoft.Models
 {
     public class Product
     {
@@ -12,6 +14,11 @@
 
         // For services, e.g. hosting, repair
         // null means the product is not a service (capacity is not limited)
-        public int? MaxCapacity { get; internal set; }
+        public int? MaxCapacity { get; set; }
+    
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }

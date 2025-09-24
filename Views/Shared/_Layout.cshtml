@@ -42,17 +42,22 @@
                             <a class="nav-link" asp-controller="home"
                                asp-action="contacts">Kontakt</a>
                         </li>
-                        @if (User.IsInRole("superadmin"))
-                        {
-                            <li class="nav-item"><a class="nav-link" asp-controller="admin"
-                                   asp-action="index">Administrace</a>
-                            </li>
-                        }
                         @if (User.IsInRole("admin") || User.IsInRole("superadmin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="orders"
                                    asp-action="index">Správa objednávek</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("superadmin"))
+                        {   
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="products"
+                                   asp-action="index">Správa produktů</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="admin"
+                                   asp-action="index">Administrace</a>
                             </li>
                         }
                     </ul>
