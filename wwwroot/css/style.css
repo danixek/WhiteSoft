@@ -111,8 +111,8 @@ a {
     height: 200px;
 }
 .primary {
-    background-color: var(--bs-primary-bg);
-    color: var(--bs-primary-color);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
 }
 .secondary {
     background-color: var(--bs-secondary-bg);
@@ -184,4 +184,8 @@ section {
 .increase-btn, .decrease-btn, .delete-btn {
     border: rgba(0,0,0,0);
     background-color: rgba(0,0,0,0);
+}
+.table-striped > tbody > tr:nth-of-type(2n+1) {
+    --bs-table-accent-bg: rgba(40,40,40,0.5) !important;
+    color: inherit !important;
 }

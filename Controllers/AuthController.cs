@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -36,10 +37,12 @@ namespace WhiteSoft.Controllers
 
         [HttpGet]
         public IActionResult Login() => View();
-        
-        [HttpPost]
+
+        [HttpPost("login")]
+        [Route("api/auth/login")] // API route
+        [Route("auth/login")]     // Web route
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel LoginModel)
+        public async Task<IActionResult> Login([FromForm] LoginViewModel LoginModel)
         {
             if (ModelState.IsValid)
             {

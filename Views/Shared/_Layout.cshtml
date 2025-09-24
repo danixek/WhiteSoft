@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -97,7 +96,7 @@
                             <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 @User.Identity?.Name
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="settingsDropdown">
+                            <ul class="dropdown-menu dropdown-menu-end position-absolute primary" aria-labelledby="settingsDropdown">
                                 <li><a class="dropdown-item" asp-controller="auth" asp-action="settings">Nastavení</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -110,7 +109,7 @@
                     else
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="auth" asp-action="login">Přihlásit</a>
+                            <a class="nav-link" onclick="new bootstrap.Modal(document.getElementById('loginModal')).show()">Přihlásit</a>
                         </li>
                         @if (!(User.IsInRole("superadmin") || User.IsInRole("admin")))
                         {
@@ -197,6 +196,7 @@
             @RenderBody()
         </main>
     </div>
+    <partial name="_LoginPartial" model='new WhiteSoft.Models.LoginViewModel { Email = "", Password = "" }' />
 
     <footer id="contact" class="mt-auto py-5 secondary">
         <div class="container footer-content">
@@ -240,7 +240,7 @@
         </div>
     </footer>
 
-
+    <script src="~/js/login.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     <script src="~/js/theme-toggler.js" asp-append-version="true"></script>
