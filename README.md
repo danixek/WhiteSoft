@@ -39,7 +39,7 @@
         <li>Původní nápad na interní sociální síť s „vlastním obsahem“ uživatelů nebyl realizován. Myšlenka superadmina, který spravuje adminy jako moderátory obsahu, mě napadla až pozdě, a <strong>požadavek zadání, aby uživatel viděl vlastní obsah, mi navíc připadal zavádějící</strong>. Nevznikl by totiž unikátní obsah pro každého uživatele, protože by vyžadoval pokročilé algoritmy; v praxi by šlo o jednoduchý RSS feed s dynamickým řazením příspěvků od nejnovějších po nejstarší, <strong>o „vlastní obsah“ pro různé uživatele by se tedy nejednalo</strong>.</li>
         <li>Doslova na poslední chvíli mě ale napadlo, že by se každému uživateli mohly ukládat seznamy odběrů do sloučeného RSS – technicky vzato by tak vznikl částečně „vlastní obsah“ pro každého uživatele.</li>
     </ul>
-    <h3>Jak projekt spustit</h3>
+    <h2>Jak projekt spustit</h2>
 
 Pro spuštění projektu doporučuji použít pokročilé editory jako Visual Studio Community nebo JetBrains Rider.
 Alternativně lze použít i Visual Studio Code s doinstalovaným rozšířením C# Dev Kit, který nainstaluje .NET SDK včetně nástroje dotnet.
