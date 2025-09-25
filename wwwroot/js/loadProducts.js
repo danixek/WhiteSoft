@@ -25,7 +25,7 @@ async function loadProducts() {
                 .replace(/{{imageUrl}}/g, p.imageUrl);
 
             const div = document.createElement('div');
-            div.classList.add('col-5', 'my-4', 'd-flex');
+            div.classList.add('col-4', 'my-3', 'd-flex');
             div.innerHTML = cardHtml;
             container.appendChild(div);
         });

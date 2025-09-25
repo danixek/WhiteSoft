@@ -42,17 +42,19 @@
             </tbody>
         </table>
 
-        <div class="form-group">
-            <label for="CustomerName">Jméno / název firmy:</label>
-            <input id="CustomerName" class="form-control" value="@user?.FirstName @user?.LastName" />
-        </div>
-        <div class="form-group">
-            <label for="CustomerEmail">Email:</label>
-            <input id="CustomerEmail" class="form-control" value="@user?.Email" />
-        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label for="CustomerName">Jméno / název firmy:</label>
+                <input id="CustomerName" class="form-control" value="@user?.FirstName @user?.LastName" />
+            </div>
+            <div class="form-group">
+                <label for="CustomerEmail">Email:</label>
+                <input id="CustomerEmail" class="form-control" value="@user?.Email" />
+            </div>
 
-        <button type="button" id="submitCart" class="btn btn-success">Odeslat</button>
-        <button type="button" id="submitCartNoPay" class="btn btn-link">Odeslat bez placení</button>
+            <button type="button" id="submitCart" class="btn btn-success">Odeslat</button>
+            <button type="button" id="submitCartNoPay" class="btn btn-link">Odeslat bez placení</button>
+        </div>
     </form>
 </div>
 

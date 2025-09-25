@@ -186,6 +186,6 @@ section {
     background-color: rgba(0,0,0,0);
 }
 .table-striped > tbody > tr:nth-of-type(2n+1) {
-    --bs-table-accent-bg: rgba(40,40,40,0.5) !important;
+    --bs-table-accent-bg: rgba(40,40,40,0.1) !important;
     color: inherit !important;
 }
