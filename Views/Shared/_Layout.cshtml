@@ -133,12 +133,12 @@
         </nav>
 
         <!-- Blank space -->
-        <div class="blankSpace w-100" style="height: @(Context.Request.Path.Value?.ToLower().Contains("/admin") == false ? 48 : 85)px"></div>
+        <div class="blankSpace w-100" style='height: @(Context.Request.Path.Value?.ToLower().Contains("/admin") == false ? 48 : 85)px'></div>
 
         @if (Context.Request.Path.Value?.ToLower().Contains("/admin") == true && Context.Request.Path.Value?.ToLower().Contains("/home") == false)
         {
-            <div class="admin-tabs position-fixed w-100" style="top: 65px; z-index: 99;">
-                <div class="container px-3 pb-2 d-flex align-items-center justify-content-between">
+            <div class="admin-tabs position-fixed primary w-100" style="top: 45px; z-index: 99;">
+                <div class="container px-3 py-3 d-flex align-items-center justify-content-between">
                     <div class="admin-label fw-semibold text-uppercase text-secondary">
                         Administrace
                     </div>
